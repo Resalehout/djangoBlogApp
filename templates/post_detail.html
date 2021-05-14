@@ -1,9 +1,51 @@
-{% extends 'base.html' %} {% block content %}
+{% extends 'base.html' %} {% block content %} {% load crispy_forms_tags %}
 <div class="post-entry">
-    <h2>{{post.title}}</h2>
+    <h2>{{post.title}}
+
+    </h2>
+    <p>
+        <i>By {{post.author}}</i>
+    </p>
     <p>
         {{ post.body }}
     </p>
 </div>
 <a href="{% url 'post_edit' post.pk %}">+ Edit Blog Post</a>
-<a href="{% url 'post_delete' post.pk %}">+ Delete Blog Post</a> {% endblock %}
+<a href="{% url 'post_delete' post.pk %}">+ Delete Blog Post</a>
+
+<h2>Leave your comment!</h2>
+<div id="comments_section">
+
+    {% if user.is_authenticated %}
+    <form method="POST">
+        {% csrf_token %}
+        <div class="form-group">
+            {{ comment_form }}
+            <button class="btn btn-info" type="submit">Add comment <i class="fas fa-comments"></i></button>
+        </div>
+    </form>
+    {% else %}
+    <a class="btn btn-outline-info" href="{% url 'login' %}?next={{request.path}}">Log in to add a comment!</a><br> {% endif %} {% if comments %}
+    <strong class="text-secondary">{{ object.number_of_comments }} Comment{{ object.number_of_comments|pluralize }}</strong>
+    <hr>
+    <ul>
+        {% for comment in comments %}
+        <li>
+            <div>
+                <span>
+	      <strong class="text-info">{{ comment.author }} </strong>
+	      <small class="text-muted">{{ comment.created_on }}</small>
+          <p>{{ comment.comment }}</p>
+	    </span>
+                <p>
+                    {{ comment.content|safe }}
+                </p>
+            </div>
+        </li>
+        {% endfor %}
+    </ul>
+    {% else %}
+    <strong class="text-secondary">No comments yet...</strong> {% endif %}
+
+</div>
+{% endblock %}
