@@ -1,7 +1,9 @@
 from django.shortcuts import render
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
-from .models import Post
+from .models import Post, Comment
 from django.urls import reverse_lazy
+from .forms import CommentForm
+from django.shortcuts import render, get_object_or_404
 
 # Create your views here.
 class BlogListView(ListView):
@@ -11,6 +13,24 @@ class BlogListView(ListView):
 class BlogPostDetail(DetailView):
     model = Post
     template_name = 'post_detail.html'
+    
+    def get_context_data(self, **kwargs):
+        data = super().get_context_data(**kwargs)
+
+        comments_connected = Comment.objects.filter(
+            post=self.get_object()).order_by('-created_on')
+        data['comments'] = comments_connected
+        if self.request.user.is_authenticated:
+            data['comment_form'] = CommentForm(instance=self.request.user)
+
+        return data
+    
+    def post(self, request, *args, **kwargs):
+        new_comment = Comment(comment=request.POST.get('comment'),
+                                  author=self.request.user,
+                                  post=self.get_object())
+        new_comment.save()
+        return self.get(self, request, *args, **kwargs)
 
 class BlogCreateView(CreateView):
     model = Post
