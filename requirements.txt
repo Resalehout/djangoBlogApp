@@ -1,3 +1,1 @@
 gunicorn
-Django
-django-crispy-forms
