@@ -1,6 +1,3 @@
 Django
 gunicorn
-psycopg2
-pytz
 whitenoise
-django-crispy-forms
