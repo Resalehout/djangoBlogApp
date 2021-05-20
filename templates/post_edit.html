@@ -1,6 +1,7 @@
-{% extends 'base.html' %} {% block content %}
+{% extends 'base.html' %} {% block content %} {% if user.is_authenticated == post.author %}
 <h1>Edit post</h1>
 <form action="" method="post">{% csrf_token %} {{ form.as_p }}
     <input type="submit" value="Update">
 </form>
-{% endblock content %}
+{% else %}
+<p>Editing blog posts is only allowed on administrators end</p> {% endif %} {% endblock content %}
